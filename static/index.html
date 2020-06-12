@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Assignment 6 - Google News</title>
+	<link rel="stylesheet" type="text/css" href="/static/index.css">
+	<script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js"></script>
+	<script src="https://d3js.org/d3.v4.js"></script>
+	<script type="text/javascript">
+		function Change(thiss){
+			document.getElementsByClassName("active")[0].setAttribute("class","buttons");
+			thiss.setAttribute("class","buttons active")
+			name=thiss.getAttribute('name')
+			if(name=="Search"){
+				document.getElementById("form1").setAttribute("style","")
+				document.getElementById("News1").setAttribute("style","display:none;")
+			}
+			if(name=="News"){
+				document.getElementById("News1").setAttribute("style","")
+				document.getElementById("form1").setAttribute("style","display:none;")
+			}
+		}
+	</script>
+
+</head>
+<body>
+	<div id="Page">
+		<div id="button">
+			<div class="buttons active" name="News" style="border-top-left-radius: 4px;border-top-right-radius: 4px;" onclick="Change(this)">Google News</div>
+			<div class="buttons" name="Search" style="border-bottom-left-radius: 4px; border-bottom-right-radius: 4px;" onclick="Change(this)">Search</div>
+		</div>
+		<div id="form1" style="display:none;">
+			<form id="form_1" onsubmit="return false;" onreset="return false;">
+				<label for="keyword">Keyword<span class="required">*</span></label>
+				&nbsp
+				<input type="search" id="keyword" name="keyword" required focus>
+				&nbsp&nbsp
+				<label for="From">From<span class="required">*</span></label>
+				&nbsp
+				<input type="date" id="From" name="From" required>
+				&nbsp&nbsp
+				<label for="To">To<span class="required">*</span></label>
+				&nbsp
+				<input type="date" id="To" name="To" required>
+				<br>
+				<br>
+				<label for="category">Category</label>
+				&nbsp
+				<select id="category" onchange="Category_Change()">
+					<option value="all">all</option>
+					<option value="business">Business</option>
+					<option value="entertainment">Entertainment</option>
+					<option value="general">General</option>
+					<option value="health">Health</option>
+					<option value="science">Science</option>
+					<option value="sports">Sports</option>
+					<option value="technology">Technology</option>
+				</select>
+				&nbsp&nbsp&nbsp
+				<label for="source">Source</label>
+				&nbsp
+				<select id="source">
+					<option value="all">all</option>
+				</select>
+				<br>
+				<br>
+				<button class="form_button" name="submit" onClick="Search_Form(this.form)">Search</button>
+				<button class="form_button" type="reset" value="reset" onClick="Default()">Clear</button>
+			</form>
+			<div id="news_stack">
+				<div class="news_tab" style="display: none; margin-bottom: 2%;">
+					<div class="news_tab_" onClick="Expand(this)">
+					<div class="news_image" style="display: flex;min-width: 13%;margin-left: 3%; margin-top: 3%;margin-bottom: 3%;">
+						<img style="width: 70px;height: 70px;object-fit: cover;" src="">
+					</div>
+					<div style="min-width: 82%;max-width: 82%;margin-left: 2%;margin-bottom: 3%;margin-top: 3%;position: relative;font-size: 14px;" class="details">
+						<h3 style="margin: 0;padding: 0;margin-bottom: 1%;">Title Hello</h3>
+						<p class="author" style="margin: 0;padding: 0;margin-bottom: 1%; display: none;"><b>Author: </b></p>
+						<p class="article_source" style="margin: 0;padding: 0;margin-bottom: 1%; display: none;"><b>Source: </b></p>
+						<p class="publish_date" style="margin: 0;padding: 0;margin-bottom: 1%; display: none;"><b>Date: </b></p>
+						<p class="detail_text_truncate" style="margin: 0;padding: 0;margin-bottom: 1%;">Article Details</p>
+						<p class="detail_text" style="margin: 0;padding: 0;margin-bottom: 1%;display: none;">Article Details</p>
+						<a class="post" style="margin: 0;padding: 0;display: none;" href="" target="_blank">See Original Post</a>
+					</div>
+					</div>
+					<div style="display: flex;margin-top: 2%;margin-left: 1%;">
+					<div class="close" style="visibility: hidden;text-align: center;" onClick="Close(this)">&times;</div>	
+					</div>
+				</div>
+			</div>
+			<div id="show_more" style="text-align: center;display: none;margin-bottom: 2%;"><button id="show_more_button" onClick="Show_More()">Show More</button></div>
+		</div>
+		<div id="News1">
+			<div id="top">
+				<div id="slider">
+					<div class="Slides fade"><a id="Image1" href="" target="_blank"><img class="Image" style="width: 100%;object-fit: cover;" src=""><div class="title_des" style="color: white;text-decoration: none; background:  rgba(0, 0, 0, 0.5);position: absolute;bottom: 0;width: 100%;"><h3></h3><p style="font-size: 12px;"></p></div></a></div>
+					<div class="Slides fade"><a id="Image2" href="" target="_blank"><img class="Image" style="width: 100%;object-fit: cover;" src=""><div class="title_des" style="color: white;text-decoration: none; background:  rgba(0, 0, 0, 0.5);position: absolute;bottom: 0;width: 100%;"><h3></h3><p style="font-size: 12px;"></p></div></a></div>
+					<div class="Slides fade"><a id="Image3" href="" target="_blank"><img class="Image" style="width: 100%;object-fit: cover;" src=""><div class="title_des" style="color: white;text-decoration: none; background:  rgba(0, 0, 0, 0.5);position: absolute;bottom: 0;width: 100%;"><h3></h3><p style="font-size: 12px;"></p></div></a></div>
+					<div class="Slides fade"><a id="Image4" href="" target="_blank"><img class="Image" style="width: 100%;object-fit: cover;" src=""><div class="title_des" style="color: white;text-decoration: none; background:  rgba(0, 0, 0, 0.5);position: absolute;bottom: 0;width: 100%;"><h3></h3><p style="font-size: 12px;"></p></div></a></div>
+					<div class="Slides fade"><a id="Image5" href="" target="_blank"><img class="Image" style="width: 100%;object-fit: cover;" src=""><div class="title_des" style="color: white;text-decoration: none; background:  rgba(0, 0, 0, 0.5);position: absolute;bottom: 0;width: 100%;"><h3></h3><p style="font-size: 12px;"></p></div></a></div>
+				</div>
+				<div id="word_cloud"></div>
+			</div>
+			<div id="CNN" style="margin-bottom: -7%;">
+				<h1 style="text-align: center;">CNN</h1>
+				<hr style="margin-top: -2%;border: 1px dotted;">	
+				<div class="card_stack">
+					<div class="cards" style="background-color: #F5F5F5"><a id="Image6" style="text-decoration:none;" href="" target="_blank"><img class="Image" style="width: 100%;border-radius: 7px;object-fit: cover;" src=""><div style="position: relative;color: black;"><h5 style="margin-top: 0;"></h5><p style="font-size: 10px;"></p></div></a></div>
+					<div class="cards" style="background-color: #F5F5F5"><a id="Image7" style="text-decoration:none;" href="" target="_blank"><img class="Image" style="width: 100%;border-radius: 7px;object-fit: cover;" src=""><div style="position: relative;color: black;"><h5 style="margin-top: 0;"></h5><p style="font-size: 10px;"></p></div></a></div>
+					<div class="cards" style="background-color: #F5F5F5"><a id="Image8" style="text-decoration:none;" href="" target="_blank"><img class="Image" style="width: 100%;border-radius: 7px;object-fit: cover;" src=""><div style="position: relative;color: black;"><h5 style="margin-top: 0;"></h5><p style="font-size: 10px;"></p></div></a></div>
+					<div class="cards" style="background-color: #F5F5F5"><a id="Image9" style="text-decoration:none;" href="" target="_blank"><img class="Image" style="width: 100%;border-radius: 7px;object-fit: cover;" src=""><div style="position: relative;color: black;"><h5 style="margin-top: 0;"></h5><p style="font-size: 10px;"></p></div></a></div>
+				</div>
+			</div>
+			<div id="Fox">
+				<h1 style="text-align: center;">Fox News</h1>
+				<hr style="margin-top: -2%;border:1px dotted;">	
+				<div class="card_stack">
+					<div class="cards" style="background-color: #F5F5F5"><a id="Image10" style="text-decoration:none;" href="" target="_blank"><img class="Image" style="width: 100%;border-radius: 7px;object-fit: cover;" src=""><div style="position: relative;color: black;"><h5 style="margin-top: 0;"></h5><p style="font-size: 10px;"></p></div></a></div>
+					<div class="cards" style="background-color: #F5F5F5"><a id="Image11" style="text-decoration:none;" href="" target="_blank"><img class="Image" style="width: 100%;border-radius: 7px;object-fit: cover;" src=""><div style="position: relative;color: black;"><h5 style="margin-top: 0;"></h5><p style="font-size: 10px;"></p></div></a></div>
+					<div class="cards" style="background-color: #F5F5F5"><a id="Image12" style="text-decoration:none;" href="" target="_blank"><img class="Image" style="width: 100%;border-radius: 7px;object-fit: cover;" src=""><div style="position: relative;color: black;"><h5 style="margin-top: 0;"></h5><p style="font-size: 10px;"></p></div></a></div>
+					<div class="cards" style="background-color: #F5F5F5"><a id="Image13" style="text-decoration:none;" href="" target="_blank"><img class="Image" style="width: 100%;border-radius: 7px;object-fit: cover;" src=""><div style="position: relative;color: black;"><h5 style="margin-top: 0;"></h5><p style="font-size: 10px;"></p></div></a></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--Slider-->
+	<script type="text/javascript">
+		Index=0
+		SlideShow()
+		function SlideShow(){
+			var slides= document.getElementsByClassName("Slides")
+			for(i=0;i<slides.length;i++){
+				slides[i].setAttribute("style","display:none;")
+			}
+			Index++;
+			if(Index>slides.length){
+				Index=1;
+			}
+			slides[Index-1].setAttribute("style","display:block;");
+			setTimeout(SlideShow,3000);
+		}
+	</script>
+	<!--Word Cloud-->
+	<script type="text/javascript">
+		// List of words
+		var word_cloud_array = new XMLHttpRequest();
+		word_cloud_array.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+			word_cloud_array=JSON.parse(this.responseText);
+			var myWords=[];
+			for(var i=0; i<word_cloud_array.length;i++){
+				myWords.push({word:word_cloud_array[i][0], size:word_cloud_array[i][1].toString()});
+			}
+			console.log(myWords);
+			// set the dimensions and margins of the graph
+			height1=document.getElementById("word_cloud").clientHeight;
+			width1=document.getElementById("word_cloud").clientWidth;
+			var margin = {top: 0, right: 0, bottom: 0, left: 0},
+			width = width1;
+			height = height1;
+			var svg = d3.select("#word_cloud").append("svg")
+			    .attr("width", width)
+			    .attr("height", height)
+			  .append("g")
+			    .attr("transform",
+			          "translate(" + margin.left + "," + margin.top + ")");
+
+			var layout = d3.layout.cloud()
+			  .size([width, height])
+			  .words(myWords.map(function(d) { return {text: d.word, size:d.size}; }))
+			  .padding(3)        //space between words
+			  .rotate(function() { return ~~(Math.random() * 2) * 90; })
+			  .fontSize(function(d) { return d.size*8; })      // font size of words
+			  .on("end", draw);
+			layout.start();
+
+			function draw(words) {
+			  svg
+			    .append("g")
+			      .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+			      .selectAll("text")
+			        .data(words)
+			      .enter().append("text")
+			        .style("font-size", function(d) { return d.size+"px"; })
+			        .style("fill", "black")
+			        .attr("text-anchor", "middle")
+			        .style("font-family", "Impact")
+			        .attr("transform", function(d) {
+			          return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+			        })
+			        .text(function(d) { return d.text; });
+			}
+       		}
+    	};
+		word_cloud_array.open("GET","/word_cloud_title",true);
+		word_cloud_array.send();
+	</script>
+	<!--Slider News-->
+	<script type="text/javascript">
+		var Slider_headlines=new XMLHttpRequest();
+		Slider_headlines.onreadystatechange = function() {
+	    if (this.readyState == 4 && this.status == 200) {
+	        headlines=JSON.parse(this.responseText);
+	        articles=headlines.articles;
+			var count=1;
+			for(i=0;i<articles.length;i++){
+				if(count<6 && articles[i].author!=null && articles[i].description!=null && articles[i].title!=null && articles[i].url!=null && articles[i].urlToImage!=null && articles[i].publishedAt!=null && articles[i].source.id!=null && articles[i].source.name!=null && articles[i].author!="" && articles[i].description!="" && articles[i].title!="" && articles[i].url!="" && articles[i].urlToImage!="" && articles[i].publishedAt!="" && articles[i].source.id!="" && articles[i].source.name!=""){
+					if(count==1){str="Image1";}
+					else if(count==2){str="Image2";}
+					else if(count==3){str="Image3";}
+					else if(count==4){str="Image4";}
+					else if(count==5){str="Image5";}
+					element=document.getElementById(str);
+					parent_height=document.getElementById("slider").clientHeight;
+					document.getElementById(str).setAttribute("href",articles[i].url);
+					image=element.getElementsByTagName("img")[0].setAttribute("src",articles[i].urlToImage);
+					element.getElementsByTagName("img")[0].setAttribute("height",parent_height);
+					header=element.getElementsByTagName("h3")[0].innerHTML=articles[i].title;
+					description=element.getElementsByTagName("p")[0].innerHTML=articles[i].description;
+					count+=1;
+				}
+				if(count==6){
+					break;
+				}
+			}
+		    }
+		};
+		Slider_headlines.open("GET","/top_headlines",true);
+		Slider_headlines.send();
+	</script>
+	<!--Cnn News-->
+	<script type="text/javascript">
+		var Cnn_news = new XMLHttpRequest();
+		Cnn_news.onreadystatechange = function() {
+	    if (this.readyState == 4 && this.status == 200) {
+			Cnn_news_display=JSON.parse(this.responseText);
+			articles=Cnn_news_display.articles;
+			var count=1;
+				for(i=0;i<articles.length;i++){
+					if(count<5 && articles[i].author!=null && articles[i].description!=null && articles[i].title!=null && articles[i].url!=null && articles[i].urlToImage!=null && articles[i].publishedAt!=null && articles[i].source.id!=null && articles[i].source.name!=null && articles[i].author!="" && articles[i].description!="" && articles[i].title!="" && articles[i].url!="" && articles[i].urlToImage!="" && articles[i].publishedAt!="" && articles[i].source.id!="" && articles[i].source.name!=""){
+						if(count==1){str1="Image6";}
+						else if(count==2){str1="Image7";}
+						else if(count==3){str1="Image8";}
+						else if(count==4){str1="Image9";}
+						element=document.getElementById(str1);
+						parent_height=document.getElementsByClassName("cards")[0].clientHeight;
+						document.getElementById(str1).setAttribute("href",articles[i].url);
+						image=element.getElementsByTagName("img")[0].setAttribute("src",articles[i].urlToImage);
+						element.getElementsByTagName("img")[0].setAttribute("height",(0.4*parent_height));
+						header=element.getElementsByTagName("h5")[0].innerHTML=articles[i].title;
+						description=element.getElementsByTagName("p")[0].innerHTML=articles[i].description;
+						count+=1;
+					}
+					if(count==5){
+						break;
+					}
+				}
+		    }
+		};
+		Cnn_news.open("GET","/cnn_news",true);
+		Cnn_news.send();
+	</script>
+	<!--Fox News-->
+	<script type="text/javascript">
+		var Fox_news = new XMLHttpRequest();
+		Fox_news.onreadystatechange = function() {
+	    if (this.readyState == 4 && this.status == 200) {
+			Fox_news_display=JSON.parse(this.responseText);
+			articles=Fox_news_display.articles;
+			var count=1;
+				for(i=0;i<articles.length;i++){
+					if(count<5 && articles[i].author!=null && articles[i].description!=null && articles[i].title!=null && articles[i].url!=null && articles[i].urlToImage!=null && articles[i].publishedAt!=null && articles[i].source.id!=null && articles[i].source.name!=null && articles[i].author!="" && articles[i].description!="" && articles[i].title!="" && articles[i].url!="" && articles[i].urlToImage!="" && articles[i].publishedAt!="" && articles[i].source.id!="" && articles[i].source.name!=""){
+						if(count==1){str1="Image10";}
+						else if(count==2){str1="Image11";}
+						else if(count==3){str1="Image12";}
+						else if(count==4){str1="Image13";}
+						element=document.getElementById(str1);
+						parent_height=document.getElementsByClassName("cards")[0].clientHeight;
+						document.getElementById(str1).setAttribute("href",articles[i].url);
+						image=element.getElementsByTagName("img")[0].setAttribute("src",articles[i].urlToImage);
+						element.getElementsByTagName("img")[0].setAttribute("height",(0.4*parent_height));
+						header=element.getElementsByTagName("h5")[0].innerHTML=articles[i].title;
+						description=element.getElementsByTagName("p")[0].innerHTML=articles[i].description;
+						count+=1;
+					}
+					if(count==5){
+						break;
+					}
+				}
+		    }
+		};
+		Fox_news.open("GET","/fox_news",true);
+		Fox_news.send();
+	</script>
+	<!--Form Search-->
+	<script type="text/javascript">
+		function Search_Form(form) {
+			function Load_Search(URL,keyword,From,To,category,source) {
+				var Search = new XMLHttpRequest();
+				Search.onreadystatechange = function() {
+					if(this.readyState == 4 && this.status == 200){
+						Search=JSON.parse(this.responseText);
+						news_tags = Search;
+						function Truncate(desin,ele){
+							var des=desin.split(" ");
+							var a="";
+							var len=0;
+							for(var i=0;i<des.length;i++)
+							{	
+								if(len+des[i].length<75)
+								{	
+									a+=des[i]+" ";
+									len+=des[i].length+1;
+								}
+								else{
+									a=a.substring(0,a.length-1)+"...";
+									break;
+								}
+							}
+							return a;
+						}
+						if(Object.keys(news_tags).includes("error")){
+							alert(news_tags.error);
+						}
+						else{
+							document.getElementById('show_more').setAttribute("style","text-align: center;display: none;margin-bottom: 2%;");
+							document.getElementById('show_more_button').innerHTML = "Show More";
+							r=document.querySelector('#no_result');
+							if(r!=null){
+								r.parentNode.removeChild(r);
+							}
+							cards=document.querySelectorAll('.news_tab');
+							for(var i=1;i<cards.length;i++){
+								cards[i].remove();
+							}
+							if(news_tags.length!=0){
+								news_stack = document.getElementById('news_stack');
+								tags = news_stack.getElementsByClassName('news_tab');
+								for(var i=0;i<news_tags.length && i<15;i++){
+									tag_1 = tags[0].cloneNode(true);
+									tag_1.getElementsByTagName('img')[0].setAttribute('src',news_tags[i]['urlToImage']);
+									tag_1.getElementsByTagName('h3')[0].innerText = news_tags[i]['title'];
+									au=document.createTextNode(news_tags[i]['author']);
+									au.className='auth';
+									tag_1.getElementsByClassName('author')[0].appendChild(au);
+									sn=document.createTextNode(news_tags[i]['source']['name']);
+									sn.className='sn'
+									tag_1.getElementsByClassName('article_source')[0].appendChild(sn);
+									date = news_tags[i]['publishedAt'].substring(0,10);
+									date_1 = date.substring(5,7)+"/"+date.substring(8,10)+"/"+date.substring(0,4);
+									date_=document.createTextNode(date_1)
+									date_.className="date";
+									tag_1.getElementsByClassName('publish_date')[0].appendChild(date_);
+									Truncate_description = Truncate(news_tags[i]['description'],tag_1.getElementsByClassName('detail_text_truncate')[0]);
+									tag_1.getElementsByClassName('detail_text_truncate')[0].innerText = Truncate_description;
+									tag_1.getElementsByClassName('detail_text')[0].innerText = news_tags[i]['description'];
+									tag_1.getElementsByClassName('post')[0].setAttribute("href",news_tags[i]['url']);
+									tag_1.setAttribute("style","display:flex;margin-bottom: 2%;");
+									news_stack.appendChild(tag_1);
+								}
+								if(tags.length>6){
+									document.getElementById('show_more').setAttribute("style","text-align: center;margin-bottom: 2%;");
+									for(var i=6;i<tags.length;i++){
+										tags[i].setAttribute("style","display:none;margin-bottom:2%;");
+									}
+								}
+							}
+							else{
+								element=document.getElementById('form1');
+								no_result = document.createElement('p');
+								no_result.id='no_result';
+								no_result.innerText = 'No results';
+								no_result.setAttribute("style","text-align:center");
+								element.appendChild(no_result);
+							}
+						}
+					}
+				};
+				Search.open("GET",URL,true);
+				Search.send();
+			}
+			var keyword = form.keyword.value;
+			var From = form.From.value;
+			var To = form.To.value;
+			var category = form.category.value;
+			var source = form.source.value;
+			var URL="/Search_Form?keyword="+keyword+"&From="+From+"&To="+To+"&category="+category+"&source="+source;
+			if(keyword.trim()!="" && From!="" && To!=""){
+				if(From<=To){
+					Load_Search(URL,keyword,From,To,category,source);	
+				}
+				else{
+					alert("Incorrect Time");
+				}
+			}
+		}
+	</script>
+	<!-- Show More Button -->
+	<script type="text/javascript">
+		function Show_More(){
+			if(document.getElementById("show_more_button").innerHTML == "Show More"){
+				document.getElementById("show_more_button").innerHTML = "Show Less";
+				var elements = document.getElementById("news_stack").getElementsByClassName("news_tab");
+				for(var i=6;i<elements.length;i++){
+					elements[i].setAttribute("style","display:flex;margin-bottom:2%;");
+				}
+			}
+			else{
+				document.getElementById("show_more_button").innerHTML = "Show More";
+				var elements = document.getElementById("news_stack").getElementsByClassName("news_tab");
+				for(var i=6;i<elements.length;i++){
+					elements[i].setAttribute("style","display:none;margin-bottom:2%;");
+				}
+			}
+		}
+	</script>
+	<!--Sources Fetch-->
+	<script type="text/javascript">
+		function Category_Change() {
+			category = document.getElementById('category').value;
+			var Category = new XMLHttpRequest();
+			Category.onreadystatechange = function() {
+				if(this.readyState==4 && this.status==200){
+					source_list=JSON.parse(this.responseText);
+					source_list=source_list.sources;
+					source_tag=document.getElementById('source');
+					var n=source_tag.length
+					for(var j=1;j<n;j++){
+						select_options=source_tag.getElementsByTagName('option')[1];
+						source_tag.removeChild(select_options)
+					}
+					for(var i=0;i<source_list.length && i<10;i++){
+						new_option = document.createElement('option');
+						new_option.value = source_list[i].id;
+						new_option.appendChild(document.createTextNode(source_list[i].name));
+						source_tag.appendChild(new_option);
+					}
+				} 
+			}
+			if(category=='all'){
+				Category.open("GET","/get_sources",true);
+			}
+			else{
+				Category.open("GET","/get_sources?category="+category,true);
+			}
+			Category.send();
+		}
+	</script>
+	<!--Set Default Date & Sources-->
+	<script type="text/javascript">
+		day = new Date().getDate();
+		month = new Date().getMonth()+1;
+		year = new Date().getFullYear();
+		day = day.toString();
+		month = month.toString();
+		year = year.toString();
+		if(month.length<2){
+			month="0"+month;
+		}
+		if(day.length<2){
+			day="0"+day;
+		}
+		date_input = year+'-'+month+'-'+day;
+		document.getElementById('To').value = date_input;
+		var d=document.getElementById('To').value;
+		var date=new Date(d);
+		date.setDate(date.getDate()-7);
+		document.getElementById('From').value = date.toISOString().substring(0,10);
+		var Category = new XMLHttpRequest();
+		Category.onreadystatechange = function() {
+			if(this.readyState==4 && this.status==200){
+				source_list=JSON.parse(this.responseText);
+				source_list=source_list.sources;
+				source_tag=document.getElementById('source');
+				for(var i=0;i<source_list.length && i<10;i++){
+					new_option = document.createElement('option');
+					new_option.value = source_list[i].name;
+					new_option.appendChild(document.createTextNode(source_list[i].name));
+					source_tag.appendChild(new_option);
+				}
+			} 
+		}
+		Category.open("GET","/get_sources",true);
+		Category.send();
+	</script>
+	<!--Set Default Clear Button -->
+	<script type="text/javascript">
+		function Default() {
+			day = new Date().getDate();
+			month = new Date().getMonth()+1;
+			year = new Date().getFullYear();
+			day = day.toString();
+			month = month.toString();
+			year = year.toString();
+			if(month.length<2){
+				month="0"+month;
+			}
+			if(day.length<2){
+				day="0"+day;
+			}
+			date_input = year+'-'+month+'-'+day;
+			document.getElementById('To').value = date_input;
+			document.getElementById('category').value = "all";
+			document.getElementById('source').value = "all";
+			document.getElementById('keyword').value= "";
+			var d=document.getElementById('To').value;
+			var date=new Date(d);
+			date.setDate(date.getDate()-7);
+			document.getElementById('From').value = date.toISOString().substring(0,10);
+			var Category = new XMLHttpRequest();
+			Category.onreadystatechange = function() {
+				if(this.readyState==4 && this.status==200){
+					source_list=JSON.parse(this.responseText);
+					source_list=source_list.sources;
+					source_tag=document.getElementById('source');
+					var n=source_tag.length
+					for(var j=1;j<n;j++){
+						select_options=source_tag.getElementsByTagName('option')[1];
+						source_tag.removeChild(select_options)
+					}
+					for(var i=0;i<source_list.length && i<10;i++){
+						new_option = document.createElement('option');
+						new_option.value = source_list[i].name;
+						new_option.appendChild(document.createTextNode(source_list[i].name));
+						source_tag.appendChild(new_option);
+					}
+					document.getElementById('show_more').setAttribute("style","text-align: center;display: none;margin-bottom:2%;");
+					document.getElementById('show_more_button').innerHTML = "Show More";
+					r=document.querySelector('#no_result');
+					if(r!=null){
+						r.parentNode.removeChild(r);
+					}
+					cards=document.querySelectorAll('.news_tab');
+					for(var i=1;i<cards.length;i++){
+						cards[i].remove();
+					}
+				} 
+			}
+			Category.open("GET","/get_sources",true);
+			Category.send();
+		}
+	</script>
+	<!--News Tab Expand -->
+	<script type="text/javascript">
+		function Expand(element_1) {
+			var element = element_1;
+			element.setAttribute("style","cursor:auto;")
+			element.getElementsByClassName("author")[0].setAttribute("style","margin: 0;padding: 0;margin-bottom: 1%;  display:;");
+			element.parentElement.getElementsByClassName("close")[0].setAttribute("style","text-align: center;");
+			element.getElementsByClassName("article_source")[0].setAttribute("style","margin: 0;padding: 0;margin-bottom: 1%; visibility:;");
+			element.getElementsByClassName("publish_date")[0].setAttribute("style","margin: 0;padding: 0;margin-bottom: 1%; display:;");
+			element.getElementsByClassName("post")[0].setAttribute("style","margin: 0;padding: 0; display:;");
+			element.getElementsByClassName("detail_text_truncate")[0].setAttribute("style","display:none;");
+			element.getElementsByClassName("detail_text")[0].setAttribute("style","margin: 0;padding: 0;margin-bottom: 1%;");
+		}
+		function Close(element_2){
+			var element = element_2.parentElement.parentElement.getElementsByClassName("news_tab_")[0];
+			element.setAttribute("style","");
+			element.getElementsByClassName("author")[0].setAttribute("style","margin: 0;padding: 0;margin-bottom: 1%;  display:none;");
+			element_2.setAttribute("style","visibility:hidden;text-align: center;");
+			element.getElementsByClassName("article_source")[0].setAttribute("style","margin: 0;padding: 0;margin-bottom: 1%; display:none;");
+			element.getElementsByClassName("publish_date")[0].setAttribute("style","margin: 0;padding: 0;margin-bottom: 1%; display:none;");
+			element.getElementsByClassName("post")[0].setAttribute("style","margin: 0;padding: 0; display:none;");
+			element.getElementsByClassName("detail_text_truncate")[0].setAttribute("style","margin: 0;padding:0;margin-bottom:1%;");
+			element.getElementsByClassName("detail_text")[0].setAttribute("style","display:none;");
+			element.getElementsByClassName("publish_date")[0].setAttribute("style","margin: 0;padding: 0; display:none;");
+		}
+	</script>
+</body>
+</html>
