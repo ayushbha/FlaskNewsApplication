@@ -1,4 +1,4 @@
-# CSCI571_FlaskNewsApp
+# FlaskNewsApplication
 
 ## Project Description
 
